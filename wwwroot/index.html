@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - EWT</title>
+    <link href="image/favicon.png" rel="shortcut icon">
+    <link href="css/app.css" rel="stylesheet">
+    <style>
+        select, input, button {
+            font-size: 2em;
+        }
+
+        form {
+            display: flex;
+        }
+
+        input {
+            flex: 1;
+            min-width: 200px;
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="/">Demo</a></h1>
+    </header>
+
+    <main>
+        <p>Select icon and enter name :</p>
+
+        <form>
+            <select id="icon">
+                <option>👦🏻</option>
+                <option>👧🏻</option>
+                <option>🐶</option>
+                <option>🐱</option>
+                <option>🐭</option>
+                <option>🐹</option>
+                <option>🐰</option>
+                <option>🦊</option>
+                <option>🐻</option>
+                <option>🐼</option>
+                <option>🐨</option>
+                <option>🐯</option>
+                <option>🦁</option>
+                <option>🐮</option>
+                <option>🐷</option>
+                <option>🐸</option>
+                <option>🐵</option>
+                <option>🐺</option>
+                <option>🐗</option>
+                <option>🦝</option>
+                <option>🐴</option>
+                <option>🦄</option>
+                <option>🦓</option>
+            </select>
+            <input id="name" placeholder="Name" autocomplete="off" autofocus>
+            <button>OK</button>
+        </form>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.slim.min.js"></script>
+    <script>
+        // ========================================================================================
+        // General
+        // ========================================================================================
+        
+        const el = $('#icon')[0];
+        el.selectedIndex = Math.floor(Math.random() * el.options.length);
+ 
+        // ========================================================================================
+        // Events 
+        // ========================================================================================
+        
+        $('form').submit(e => {
+            e.preventDefault();
+            
+            const icon = $('#icon').val().trim();
+            const name = $('#name').val().trim();
+
+            if (icon && name) {
+                sessionStorage.setItem('icon', icon);
+                sessionStorage.setItem('name', name);
+                location = 'list.html';
+            }
+
+            $('#name').val('').focus();
+        });
+        
+    </script>
+</body>
+</html>

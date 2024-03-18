@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - EWT</title>
+    <link href="image/favicon.png" rel="shortcut icon">
+    <link href="css/app.css" rel="stylesheet">
+    <style>
+        main {
+            padding: 0;
+            display: flex;
+        }
+
+        #game-lobby , #chat-lobby {
+            flex: 1;
+        }
+
+        /* Chat CSS */
+
+        #chat-lobby{
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 70px);
+            box-shadow: rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;
+        }
+
+        #chat-header {
+            padding: 10px;
+            white-space: nowrap;
+            background-color: #333;
+            color: #ccc;
+            display: flex;
+            place-items: center;
+        }
+
+        #chat-headere h1 {
+            flex: 1;
+            margin: 0;
+            background: url(../image/favicon.png) no-repeat left center / 32px 32px;
+            padding-left: 40px;
+        }
+
+        #chat-header div {
+            color: #000;
+            padding: 3px 6px;
+            border-radius: 3px;
+            background-color: #ccc;
+            font-size: 1.5rem;
+        }
+
+        #chat-body {
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column-reverse;
+            padding: 10px;
+            flex: 1;
+        }
+
+        .image {
+            max-width: 200px;
+            max-height: 200px;
+            border: 1px solid #999;
+            cursor: pointer;
+        }
+
+        .image:fullscreen {
+            object-fit: scale-down !important;
+            border: none !important;
+            background: #000 !important;
+        }
+
+        .active {
+            outline: 5px dashed red;
+            outline-offset: -5px;
+        }
+
+        #chat-dialog {
+            border: 1px solid #000;
+            border-radius: 5px;
+            padding: 5px;
+        }
+
+        #chat-dialog::backdrop {
+            background: #0009;
+        }
+
+        #chat-dialog form {
+            display: block;
+            text-align: right;
+            margin-bottom: 5px;
+        }
+
+        #chat-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        #chat-container .image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+        }
+
+        #chat-footer {
+            padding: 10px;
+            white-space: nowrap;
+            background-color: #333;
+        }
+
+        /* Game CSS */
+
+        #game-lobby{
+            touch-action: none;
+            user-select: none;
+            padding: 0 50px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="/">Demo</a></h1>
+    </header>
+
+    <main>
+        <!-- Game -->
+        <div id="game-lobby">
+            <p>
+                <button id="leave">Leave</button>
+                <button id="game-create" disabled>Create Game</button>
+            </p>
+
+            <p>You are : <b id="you"></b></p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Player A</th>
+                        <th>Join Game</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="2">No game</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Chat -->
+        <div id="chat-lobby">
+            <div id="chat-header">
+                <h1>ChatRT 3.0</h1>
+                <div>👧🏻 = <b id="count">0</b></div>
+            </div>
+
+            <div id="chat-body">
+                <div style="flex: 1"></div>
+                <ul id="chat"></ul>
+            </div>
+
+            <div id="chat-footer">
+                <form id="chat-form" autocomplete="off">
+                    <input type="text" id="message" placeholder="Enter Message" autofocus>
+                    <button type="button" id="chat-image">Image</button>
+                    <button type="button" id="gallery">Gallery</button>
+                    <!-- <button type="button" id="leave">Leave</button> -->
+                    <input type="file" id="chat-file" accept="image/*" hidden multiple>
+                </form>
+            </div>
+
+            <div>
+                <dialog id="chat-dialog">
+                    <form method="dialog"><button>❌</button></form>
+                    <div id="chat-container"></div>
+                </dialog>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // ========================================================================================
+        // Checking
+        // ========================================================================================
+
+        const icon = sessionStorage.getItem('icon');
+        const name = sessionStorage.getItem('name');
+
+        if (!icon || !name) { 
+            location = '/';
+            throw 'ERROR: Invalid icon or name';
+        }
+
+        $('#you').text(`${icon} ${name}`);
+
+        // ========================================================================================
+        // General Functions (Chat)
+        // ========================================================================================
+
+        function getImageURL(message) {
+            const re = /\.(jpg|jpeg|png|webp|bmp|gif)$/i;
+            try {
+                const url = new URL(message);
+                if (re.test(url.pathname)) {
+                    return url.href;
+                }
+            }
+            catch {
+                // Do nothing
+            }
+            return null;
+        }
+
+        function getYouTubeId(message) {
+            try {
+                const url = new URL(message);
+                if (url.hostname == 'www.youtube.com' && url.pathname == '/watch') {
+                    return url.searchParams.get('v');
+                }
+            }
+            catch {
+                // Do nothing
+            }
+            return null;
+        }
+
+        function sendImages(files) {
+            for (const f of files) {
+                if (f && f.type.startsWith('image/')) {
+                    // const fr = new FileReader();
+                    // fr.onload = e => {
+                    //     const url = e.target.result;
+                    //     con.invoke('SendImage', name, url);
+                    // };
+                    // fr.readAsDataURL(f);
+
+                    fit(f, 500, 500, 'dataURL', 'image/webp')
+                        .then(url => chatCon.invoke('SendImage', name, url));
+                }
+            }
+        }
+
+        // ========================================================================================
+        // Events
+        // ========================================================================================
+
+        $('#leave').click(e => {
+            console.log('lol')
+            sessionStorage.clear();
+            location = '/';
+        });
+
+        $('#game-create').click(async e => {
+            const gameId = await gameCon.invoke('Create');
+            location = `game.html?gameId=${gameId}`;
+        });
+
+        $(document).on('click', '[data-join]', e => {
+            const gameId = e.target.dataset.join;
+            location = `game.html?gameId=${gameId}`;
+        });
+
+        // ========================================================================================
+        // Connection Setup (Chat)
+        // ========================================================================================
+
+        const chatParam = $.param({name});
+        const chatCon = new signalR.HubConnectionBuilder()
+            .withUrl('/chathub?' + chatParam)
+            .build();
+
+        chatCon.onclose(err => {
+            sessionStorage.clear();
+            location = '/';
+        });
+
+        chatCon.on('ReceiveText', (name, message, who) => {
+            message = message
+                .replaceAll(':)', '😊')
+                .replaceAll(':(', '😒')
+                .replaceAll('<3', '❤️');
+
+            message = $('<div>').text(message).html();
+
+            message = message.replace(
+                /(https?:\/\/\S+)/gi,
+                '<a href="$&" target="_blank">$&</a>'
+            );
+
+            $('#chat').append(`
+                <li class="${who}">
+                    <div>
+                        <b>${name}:</b> ${message}
+                    </div>
+                </li>
+            `);
+        });
+
+        chatCon.on('UpdateStatus', (count, status) => {
+            $('#count').text(count);
+
+            $('#chat').append(`
+                <li class="status">
+                    <div>
+                        ${status}
+                    </div>
+                </li>
+            `);
+        });
+
+        chatCon.on('ReceiveImage', (name, url, who) => {
+            $('#chat').append(`
+                <li class="${who}">
+                    <div>
+                        <b>${name}</b> sent an image<br>
+                        <img src="${url}" class="image">
+                    </div>
+                </li>
+            `);
+        });
+
+        chatCon.on('ReceiveYouTube', (name, id, who) => {
+            $('#chat').append(`
+                <li class="${who}">
+                    <div>
+                        <b>${name}</b> sent a video<br>
+                        <iframe width="400" height="300"
+                                src="https://www.youtube.com/embed/${id}"
+                                frameborder="0"
+                                allowfullscreen></iframe>
+                    </div>
+                </li>
+            `);
+        });
+
+        chatCon.start().then(()=>{
+            // Form
+            $('#chat-footer form').submit(e => {
+                console.log(e)
+                e.preventDefault();
+                const message = $('#message').val().trim();
+                if (message) {
+                    const url = getImageURL(message);
+                    const id = getYouTubeId(message);
+
+                    if (url) {
+                        chatCon.invoke('SendImage', name, url);
+                    }
+                    else if (id) {
+                        chatCon.invoke('SendYouTube', name, id);
+                    }
+                    else {
+                        console.log(message)
+                        chatCon.invoke('SendText', name, message);
+                    }
+                }
+                $('#message').val('').focus();
+            });
+
+            // Fullscreen
+            $(document).on('click', '.image', e => {
+                document.fullscreenElement ?
+                    document.exitFullscreen() :
+                    e.target.requestFullscreen();
+            });
+
+            // File picker
+            $('#chat-image').click(e => $('#chat-file').click());
+
+            $('#chat-file').change(e => {
+                const files = e.target.files;
+                sendImages(files);
+                e.target.value = null;
+            });
+
+            // TODO: Drag and drop
+            $('#chat-body').on('dragenter dragover', e => {
+                e.preventDefault();
+                $('#chat-body').addClass('active');
+            });
+
+            $('#chat-body').on('dragleave drop', e => {
+                e.preventDefault();
+                $('#chat-body').removeClass('active');
+            });
+
+            $('#chat-body').on('drop', e => {
+                e.preventDefault();
+                const files = e.originalEvent.dataTransfer.files;
+                sendImages(files);
+            });
+
+            // TODO: Dialog
+            $('#gallery').click(e => {
+                const $images = $('.image').clone();
+                $('#chat-container').append($images.length ? $images : 'No image');
+                $('#chat-dialog')[0].showModal();
+            });
+
+            $('#chat-dialog').on('close', e => {
+                $('#chat-container').empty();
+            });
+        });
+
+        // ========================================================================================
+        // Connection Setup (Game)
+        // ========================================================================================
+
+        const gameParam = $.param({ page: 'list' });
+
+        const gameCon = new signalR.HubConnectionBuilder()
+            .withUrl('/gamehub?' + gameParam)
+            .build();
+
+        gameCon.onclose(err => {
+            alert('Disconnected');
+            location = '/';
+        });
+
+        gameCon.on('UpdateList', games => {
+            let h = '';
+
+            for (const game of games) {
+                h += `
+                    <tr>
+                        <td>${game.playerA.icon} ${game.playerA.name}</td>
+                        <td>
+                            <button data-join="${game.id}">Join</button>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            if (games.length == 0) {
+                h = '<tr><td colspan="2">No game</td></tr>';
+            }
+
+            $('tbody').html(h);
+        });
+
+        gameCon.start().then(() => {
+            $('#game-create').prop('disabled', false);
+        });
+
+        // function main() {
+        // };
+
+    </script>
+</body>
+</html>

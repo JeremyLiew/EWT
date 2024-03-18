@@ -1,0 +1,108 @@
+﻿/* Font ======================================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+/* General ==================================================================== */
+body, input, textarea, select, button {
+    font: 16px 'Roboto', sans-serif;
+}
+
+/***** Layout *****/
+body {
+    margin: 0;
+    height: 100vh;
+    display: grid;
+    grid: auto 1fr / auto;
+}
+
+header {
+    background: #333;
+    color: #fff;
+    padding: 10px 50px;
+    height: 50px;
+}
+
+header h1 {
+    text-align: center;
+    margin: 0;
+    /* padding-left: 40px;
+    background: url(../image/favicon.png) no-repeat left center / 32px 32px; */
+}
+
+header h1 a {
+    color: inherit;
+    text-decoration: none;
+}
+
+main {
+    padding: 10px;
+}
+
+/***** Table *****/
+table {
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #999;
+    padding: 5px 10px;
+}
+
+input[type=text] {
+    padding: 5px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* Chat ======================================================================= */
+form {
+    display: flex;
+}
+
+#chat {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#chat li {
+    margin-bottom: 3px;
+}
+
+#chat li div {
+    display: inline-block;
+    max-width: 80%;
+    padding: 3px 6px;
+    border-radius: 3px;
+    word-break: break-all;
+}
+
+#chat li.caller {
+    text-align: right;
+}
+
+#chat li.caller div {
+    background-color: #aed581;
+}
+
+#chat li.others {
+    text-align: left;
+}
+
+#chat li.others div {
+    background-color: #80deea;
+}
+
+#chat li.status {
+    text-align: center;
+}
+
+#chat li.status div {
+    background-color: #ffd54f;
+}
+
+/***** Media Query *****/
+@media only screen and (max-width: 500px) {
+    header, main {
+        padding: 10px;
+    }
+}
