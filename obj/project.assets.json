@@ -8,19 +8,19 @@
     "net8.0": []
   },
   "packageFolders": {
-    "C:\\Users\\JLiew\\.nuget\\packages\\": {}
+    "C:\\Users\\blon8\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\JLiew\\OneDrive\\Desktop\\EWT\\assignment\\demo\\PressRT.csproj",
+      "projectUniqueName": "C:\\Users\\blon8\\popcorn_1stproject\\EWT\\PressRT.csproj",
       "projectName": "PressRT",
-      "projectPath": "C:\\Users\\JLiew\\OneDrive\\Desktop\\EWT\\assignment\\demo\\PressRT.csproj",
-      "packagesPath": "C:\\Users\\JLiew\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\JLiew\\OneDrive\\Desktop\\EWT\\assignment\\demo\\obj\\",
+      "projectPath": "C:\\Users\\blon8\\popcorn_1stproject\\EWT\\PressRT.csproj",
+      "packagesPath": "C:\\Users\\blon8\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\blon8\\popcorn_1stproject\\EWT\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\JLiew\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\blon8\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -69,7 +69,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.202/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.203/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

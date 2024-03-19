@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "tJwhtVWHK1qc96Cm0tFNe+PRbBSJZwwrbKKM709L+Fs=",
+  "Hash": "Vp0A8kAiNp+SuBGL7K2FYsdHHI2m8W6MfZwGTvscmpA=",
   "Source": "PressRT",
   "BasePath": "_content/PressRT",
   "Mode": "Default",
@@ -10,17 +10,17 @@
     {
       "Name": "PressRT\\wwwroot",
       "Source": "PressRT",
-      "ContentRoot": "C:\\Users\\JLiew\\OneDrive\\Desktop\\EWT\\assignment\\demo\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\blon8\\popcorn_1stproject\\EWT\\wwwroot\\",
       "BasePath": "_content/PressRT",
       "Pattern": "**"
     }
   ],
   "Assets": [
     {
-      "Identity": "C:\\Users\\JLiew\\OneDrive\\Desktop\\EWT\\assignment\\demo\\wwwroot\\css\\app.css",
+      "Identity": "C:\\Users\\blon8\\popcorn_1stproject\\EWT\\wwwroot\\css\\app.css",
       "SourceId": "PressRT",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\JLiew\\OneDrive\\Desktop\\EWT\\assignment\\demo\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\blon8\\popcorn_1stproject\\EWT\\wwwroot\\",
       "BasePath": "_content/PressRT",
       "RelativePath": "css/app.css",
       "AssetKind": "All",
@@ -36,10 +36,10 @@
       "OriginalItemSpec": "wwwroot\\css\\app.css"
     },
     {
-      "Identity": "C:\\Users\\JLiew\\OneDrive\\Desktop\\EWT\\assignment\\demo\\wwwroot\\game.html",
+      "Identity": "C:\\Users\\blon8\\popcorn_1stproject\\EWT\\wwwroot\\game.html",
       "SourceId": "PressRT",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\JLiew\\OneDrive\\Desktop\\EWT\\assignment\\demo\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\blon8\\popcorn_1stproject\\EWT\\wwwroot\\",
       "BasePath": "_content/PressRT",
       "RelativePath": "game.html",
       "AssetKind": "All",
@@ -55,10 +55,10 @@
       "OriginalItemSpec": "wwwroot\\game.html"
     },
     {
-      "Identity": "C:\\Users\\JLiew\\OneDrive\\Desktop\\EWT\\assignment\\demo\\wwwroot\\image\\favicon.png",
+      "Identity": "C:\\Users\\blon8\\popcorn_1stproject\\EWT\\wwwroot\\image\\favicon.png",
       "SourceId": "PressRT",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\JLiew\\OneDrive\\Desktop\\EWT\\assignment\\demo\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\blon8\\popcorn_1stproject\\EWT\\wwwroot\\",
       "BasePath": "_content/PressRT",
       "RelativePath": "image/favicon.png",
       "AssetKind": "All",
@@ -74,10 +74,10 @@
       "OriginalItemSpec": "wwwroot\\image\\favicon.png"
     },
     {
-      "Identity": "C:\\Users\\JLiew\\OneDrive\\Desktop\\EWT\\assignment\\demo\\wwwroot\\index.html",
+      "Identity": "C:\\Users\\blon8\\popcorn_1stproject\\EWT\\wwwroot\\index.html",
       "SourceId": "PressRT",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\JLiew\\OneDrive\\Desktop\\EWT\\assignment\\demo\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\blon8\\popcorn_1stproject\\EWT\\wwwroot\\",
       "BasePath": "_content/PressRT",
       "RelativePath": "index.html",
       "AssetKind": "All",
@@ -93,10 +93,10 @@
       "OriginalItemSpec": "wwwroot\\index.html"
     },
     {
-      "Identity": "C:\\Users\\JLiew\\OneDrive\\Desktop\\EWT\\assignment\\demo\\wwwroot\\js\\app.js",
+      "Identity": "C:\\Users\\blon8\\popcorn_1stproject\\EWT\\wwwroot\\js\\app.js",
       "SourceId": "PressRT",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\JLiew\\OneDrive\\Desktop\\EWT\\assignment\\demo\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\blon8\\popcorn_1stproject\\EWT\\wwwroot\\",
       "BasePath": "_content/PressRT",
       "RelativePath": "js/app.js",
       "AssetKind": "All",
@@ -112,10 +112,10 @@
       "OriginalItemSpec": "wwwroot\\js\\app.js"
     },
     {
-      "Identity": "C:\\Users\\JLiew\\OneDrive\\Desktop\\EWT\\assignment\\demo\\wwwroot\\list.html",
+      "Identity": "C:\\Users\\blon8\\popcorn_1stproject\\EWT\\wwwroot\\list.html",
       "SourceId": "PressRT",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\JLiew\\OneDrive\\Desktop\\EWT\\assignment\\demo\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\blon8\\popcorn_1stproject\\EWT\\wwwroot\\",
       "BasePath": "_content/PressRT",
       "RelativePath": "list.html",
       "AssetKind": "All",
