@@ -24,7 +24,7 @@ public class Card
 // ============================================================================================
 // Class: Player
 // ============================================================================================
-    
+
 public class Player
 {
     // private const int STEP = 1;
@@ -186,7 +186,6 @@ public class GameHub : Hub
 
     public async Task PlaceBet(int betAmount ,bool endRound)
     {
-        Console.WriteLine(endRound);
         string id = Context.ConnectionId;
         string gameId = Context.GetHttpContext()!.Request.Query["gameId"].ToString();
 
@@ -200,12 +199,6 @@ public class GameHub : Hub
         var player = game.Players.FirstOrDefault(p => p.Id == id);
         if (player == null)
         {
-            return;
-        }
-
-        if (betAmount > player.Chips)
-        {
-            // Handle insufficient funds
             return;
         }
 
@@ -261,7 +254,7 @@ public class GameHub : Hub
 
     }
 
-    public async Task Showdown()
+    public async Task Showdown(int potAmount)
     {
         string gameId = Context.GetHttpContext()!.Request.Query["gameId"].ToString();
         var game = games.FirstOrDefault(g => g.Id == gameId);
@@ -271,6 +264,9 @@ public class GameHub : Hub
         }
 
         await Clients.Group(gameId).SendAsync("Showdown");
+        await Task.Delay(2000);
+
+        await DetermineWinner(potAmount);
 
     }
 
@@ -296,7 +292,7 @@ public class GameHub : Hub
             foreach (var winner in winners)
             {
                 winner.Chips += chipsPerWinner;
-                 await Clients.Group(gameId).SendAsync("SplitPot", game ,winner);
+                await Clients.Group(gameId).SendAsync("SplitPot", game);
             }
         }
     }
@@ -319,7 +315,7 @@ public class GameHub : Hub
             var winner = remainingPlayers.Count == 1 ? remainingPlayers[0] : null;
             await Clients.Group(gameId).SendAsync("Win", game.Players[0].Id == winner.Id?'A':'B');
         }else{
-             game.DealCards();
+            game.DealCards();
             await Clients.Group(gameId).SendAsync("Start", game);
         }
     }

@@ -260,14 +260,15 @@
 
         let started = false;
         let me = null; // A or B
-        let potAmount = 0
         let $game;// testing value
         let isPlayerATurn = true;
         let turnTimer;
         let remainingTime = 30;
 
+        let potAmount = 0
         let playerABet = 0;
         let playerBBet = 0;
+
         const $gameStatus = $('#gameStatus');
         const $status = $('#status');
 
@@ -295,7 +296,7 @@
                 if (amountToCall <= chipsLeft) {
                     con.invoke('PlaceBet', amountToCall , true)
                     updatePot(amountToCall)
-                    con.invoke('Showdown')
+                    con.invoke('Showdown',potAmount)
                 } else {
                     console.log('You cannot afford to call');
                 }
@@ -327,7 +328,7 @@
                 if (amountToCall <= chipsLeft) {
                     con.invoke('PlaceBet', amountToCall , true);
                     updatePot(amountToCall)
-                    con.invoke('Showdown')
+                    con.invoke('Showdown',potAmount)
                 } else {
                     console.log('You cannot afford to call');
                 }
@@ -397,24 +398,41 @@
         con.on('SplitPot', (game , winner = null , foldedPlayer = null) => {
             if(foldedPlayer != null){
                 $status.text(`Player ${foldedPlayer.name} folded.`);
+
+                if(winner != null){
+                    let letter = game.players[0].id == winner.id?'A':'B';
+
+                    if (me == letter) {
+                        $status.text('You win !');
+                        $('#timer').text('Opponent Timeout ...');
+                    }
+                    else {
+                        $status.text('You lose ...');
+                        $('#timer').text('Timeout !');
+                    }
                 }
+            }
 
                 for (let i = 0; i < game.players.length; i++) {
                     const player = game.players[i];
                     updateChipsAndMax(player.chips, player.id == game.players[0].id ? 'A' : 'B');
                 }
+
+                if(winner != null){
+                    let letter = game.players[0].id == winner.id?'A':'B';
+
+                    if (me == letter) {
+                        $status.text('You win !');
+                    }
+                    else {
+                        $status.text('You lose ...');
+                    }
+                }else{
+                    $status.text('Its a Tie !');
+                }
+
                 potAmount = 0
                 $("#potAmount").text(potAmount);
-
-                let letter = game.players[0].id == winner.id?'A':'B';
-                console.log(letter)
-                if (me == letter) {
-                    console.log(letter)
-                    $status.text('You win!');
-                }
-                else {
-                    $status.text('You lose!');
-                }
 
                 playerABet = 0
                 playerBBet = 0
@@ -433,6 +451,17 @@
         });
 
         con.on('Showdown', () => {
+            clearInterval(turnTimer);
+            $('#timer').text('Showing hand');
+            $('#placeBetA').prop('disabled', true);
+            $('#checkA').prop('disabled', true);
+            $('#callA').prop('disabled', true);
+            $('#foldA').prop('disabled', true);
+            $('#placeBetB').prop('disabled', true);
+            $('#checkB').prop('disabled', true);
+            $('#callB').prop('disabled', true);
+            $('#foldB').prop('disabled', true);
+            $status.text('Showdown !');
             document.getElementById('showdownAudio').play();
             setTimeout(() => {
                 $('#cardA').show();
@@ -449,18 +478,14 @@
                         $('#cardABack').show();
                         $('#cardB').show();
                     }
-                }, 5000); // Hide opponent's cards after 5 seconds
+                }, 6000); // Hide opponent's cards after 6 seconds
             }, 2000); // Show both players' cards after 1 second
 
-            setTimeout(() => {
-                con.invoke('DetermineWinner',potAmount)
-            }, 6000);
         });
 
         con.on('Start', (game) => {
-            $game = game
             document.getElementById('flipAudio').play();
-            clearInterval(turnTimer);
+            $game = game
             $('#placeBetA').prop('disabled', false);
             $('#placeBetB').prop('disabled', true);
 
@@ -511,23 +536,16 @@
 
             resetTurnTimer()
 
-            // setTimeout(() => $status.text('Ready... 3'), 1000);
-            // setTimeout(() => $status.text('Ready... 2'), 2000);
-            // setTimeout(() => $status.text('Ready... 1'), 3000);
-            // setTimeout(() => {
-                
-            // }, 4000);
-
         });
 
         con.on('Win', letter => {
             started = false;
 
             if (me == letter) {
-                $status.text('You win!');
+                $status.text('You win !');
             }
             else {
-                $status.text('You lose!');
+                $status.text('You lose !');
             }
 
             setTimeout(() => location = 'list.html', 3000);
@@ -560,12 +578,22 @@
         function startTurnTimer() {
             turnTimer = setInterval(() => {
                 remainingTime--;
-                if (remainingTime >= 0) {
+                if (remainingTime > 0) {
                     $('#timer').text(`Time remaining: ${remainingTime} seconds`);
-                } else {
-                    if (isPlayerATurn) {
+                } else if (remainingTime == 0){
+                    $('#timer').text(`Time remaining: ${remainingTime} seconds`);
+
+                    $('#placeBetA').prop('disabled', true);
+                    $('#checkA').prop('disabled', true);
+                    $('#callA').prop('disabled', true);
+                    $('#foldA').prop('disabled', true);
+                    $('#placeBetB').prop('disabled', true);
+                    $('#checkB').prop('disabled', true);
+                    $('#callB').prop('disabled', true);
+                    $('#foldB').prop('disabled', true);
+                    if (isPlayerATurn && me == 'A') {
                         $('#foldA').click();
-                    } else {
+                    } else if(!isPlayerATurn && me == 'B') {
                         $('#foldB').click();
                     }
                 }
@@ -614,15 +642,6 @@
             }
 
             resetTurnTimer()
-
-            // Notify the server to switch the turn
-            // con.invoke('SwitchTurn')
-            //     .then(() => {
-            //         console.log('Turn switched successfully');
-            //     })
-            //     .catch(error => {
-            //         console.error('Error switching turn:', error);
-            //     });
         }
 
         function updatePot(bet){
@@ -687,9 +706,8 @@
                     isPlayerABet = true;
                     con.invoke('PlaceBet', adjustedBetAmount , adjustedBetAmount == betAmountOpponent?true:false)
                         .then(() => {
-                            console.log('Bet placed successfully');
                             if(adjustedBetAmount == betAmountOpponent){
-                                con.invoke('Showdown')
+                                con.invoke('Showdown',potAmount)
                             }
                             document.getElementById('betAudio').play();
                         })
@@ -709,16 +727,13 @@
                 // Ensure the bet amount from B is not more than what A has left
                 let totalPlayerAChips = playerAChips + betAmountOpponent;
                 adjustedBetAmount = Math.min(betAmount, totalPlayerAChips)
-                console.log(adjustedBetAmount);
-                console.log(betAmountOpponent);
 
                 if (started && !isPlayerATurn) {
                     con.invoke('PlaceBet', adjustedBetAmount , adjustedBetAmount == betAmountOpponent?true:false)
                         .then(() => {
                             if(adjustedBetAmount == betAmountOpponent){
-                                con.invoke('Showdown')
+                                con.invoke('Showdown',potAmount)
                             }
-                            console.log('Bet placed successfully');
                             document.getElementById('betAudio').play();
                         })
                         .catch(error => {
