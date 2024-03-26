@@ -7,13 +7,22 @@
     <link href="image/favicon.png" rel="shortcut icon">
     <link href="css/app.css" rel="stylesheet">
     <style>
-        #status {
+        #gameStatus {
             text-align: center;
             font-size: 2rem;
         }
 
+        #status {
+            text-align: center;
+            font-size: 3rem;
+        }
+
         .container {
+            /* height: 500px; */
             display: flex;
+            flex-direction: column-reverse;
+            text-align: center;
+            justify-content: space-between;
         }
 
         .start, .finish {
@@ -56,6 +65,52 @@
             border: 3px solid blue;
             border-radius: 5px;
         }
+
+        /* card css */
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(1, 200px);
+            grid-gap: 1em;
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        .grid-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 2fr 1fr;
+            grid-gap: 5px;
+            background-color: white;
+            color: black;
+            font-size: 1.5em;
+            padding: 10px;
+            border-radius: 5%;
+            box-shadow: 0px 5px 15px grey;
+        }
+
+        .heart {
+            text-align: center;
+            align-self: center;
+            font-size: 2em;
+            color: red;
+        }
+
+        .top-left {
+            padding: 0.1em;
+        }
+
+        .bottom-right {
+            align-self: end;
+            transform: rotate(180deg);
+        }
+
+        #bettingA , #bettingB {
+            text-align: center;
+            display: none;
+            padding-top: 20px;
+        }
+
     </style>
 </head>
 <body>
@@ -64,29 +119,121 @@
     </header>
 
     <main>
+        <audio id="flipAudio" src="audio/flipcard.mp3"></audio>
+        <audio id="checkAudio" src="audio/check.mp3"></audio>
+        <audio id="betAudio" src="audio/bet.mp3"></audio>
+        <audio id="foldAudio" src="audio/fold.mp3"></audio>
+        <audio id="showdownAudio" src="audio/showdown.mp3"></audio>
+
         <p><button id="leave">Leave</button></p>
 
+        <p id="gameStatus">Poker Star EWT</p>
         <p id="status">Waiting another player...</p>
 
-        <div>Player A : <b id="nameA"></b></div>
         <div class="container">
-            <div class="start">START</div>
-            <div class="lane">
-                <div class="icon" id="A" hidden></div>
+            <div id="A">Player A : <b id="nameA"></b> - Chips: <span id="chipsA">0</span></div>
+
+            <!-- Cards for both players -->
+        <div class="grid-container">
+            <div id="cardB" class="grid-item" style="display: none;">
+                <div class="top-left"><span class="cardValueB"></span><br>
+                    <div style="color:red">♥</div>
+                </div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div class="heart">♥</div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div class="bottom-right"><span class="cardValueB"></span><br>
+                    <div style="color:red;">♥</div>
+                </div>
             </div>
-            <div class="finish">FINISH</div>
+            <div id="cardBBack" class="grid-item" style="display: none; border: 10px solid black;">
+                <div><span></span><br>
+                    <div>⬛</div>
+                </div>
+                <div><span></span><br>
+                    <div>⬛</div>
+                </div>
+                <div><span></span><br>
+                    <div>⬛</div>
+                </div>
+                <div style="align-self: center;">⬛</div>
+                <div style="align-self: center;">⬛</div>
+                <div style="align-self: center;" >⬛</div>
+                <div>⬛</div>
+                <div>⬛</div>
+                <div><div>⬛</div><br>
+                    <span></span>
+                </div>
+            </div>
+            <div id="pot">
+                <label>Pot:</label>
+                <output id="potAmount">0</output>
+            </div>
+            <div id="cardABack" class="grid-item" style="display: none; border: 10px solid black;">
+                <div><span></span><br>
+                    <div>⬛</div>
+                </div>
+                <div><span></span><br>
+                    <div>⬛</div>
+                </div>
+                <div><span></span><br>
+                    <div>⬛</div>
+                </div>
+                <div style="align-self: center;">⬛</div>
+                <div style="align-self: center;">⬛</div>
+                <div style="align-self: center;" >⬛</div>
+                <div>⬛</div>
+                <div>⬛</div>
+                <div><div>⬛</div><br>
+                    <span></span>
+                </div>
+            </div>
+            <div id="cardA" class="grid-item" style="display: none;">
+                <div class="top-left"><span class="cardValueA"></span><br>
+                    <div style="color:red">♥</div>
+                </div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div class="heart">♥</div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div class="bottom-right"><span class="cardValueA"></span><br>
+                    <div style="color:red;">♥</div>
+                </div>
+            </div>
         </div>
 
-        <br>
-
-        <div>Player B : <b id="nameB"></b></div>
-        <div class="container">
-            <div class="start">START</div>
-            <div class="lane">
-                <div class="icon" id="B" hidden></div>
-            </div>
-            <div class="finish">FINISH</div>
+        <div id="B">Player B : <b id="nameB"></b> - Chips: <span id="chipsB">0</span></div>
         </div>
+
+        <div id="bettingA">
+            <label for="betAmountA">Bet Amount:</label>
+            <input autofocus type="range" id="betAmountA" name="betAmountA" min="0" max="100" step="5">
+            <output id="betValueA">0</output>
+            <button id="placeBetA">Place Bet</button>
+            <button id="checkA">Check</button>
+            <button id="callA">Call</button>
+            <button id="foldA">Fold</button>
+        </div>
+
+        <div id="bettingB">
+            <label for="betAmountB">Bet Amount:</label>
+            <input autofocus type="range" id="betAmountB" name="betAmountB" min="0" max="100" step="5">
+            <output id="betValueB">0</output>
+            <button id="placeBetB">Place Bet</button>
+            <button id="checkB">Check</button>
+            <button id="callB">Call</button>
+            <button id="foldB">Fold</button>
+        </div>
+
+        <div id="timer" style="font-size: 1.2rem; text-align: center;"></div>
+
     </main>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.slim.min.js"></script>
@@ -95,11 +242,11 @@
         // ========================================================================================
         // General
         // ========================================================================================
-        
+
         const icon = sessionStorage.getItem('icon');
         const name = sessionStorage.getItem('name');
 
-        if (!icon || !name) { 
+        if (!icon || !name) {
             location = '/';
             throw 'ERROR: Invalid icon or name';
         }
@@ -113,6 +260,16 @@
 
         let started = false;
         let me = null; // A or B
+        let $game;// testing value
+        let isPlayerATurn = true;
+        let turnTimer;
+        let remainingTime = 30;
+
+        let potAmount = 0
+        let playerABet = 0;
+        let playerBBet = 0;
+
+        const $gameStatus = $('#gameStatus');
         const $status = $('#status');
 
         // ========================================================================================
@@ -122,7 +279,70 @@
         $('#leave').click(e => {
             location = 'list.html';
         });
-       
+
+        $('#checkA').click(e => {
+            e.preventDefault()
+            if (started && isPlayerATurn) {
+                document.getElementById('checkAudio').play();
+                con.invoke('Check');
+            }
+        });
+
+        $('#callA').click(e => {
+            e.preventDefault()
+            if (started && isPlayerATurn) {
+                const amountToCall = playerBBet - playerABet
+                const chipsLeft = parseInt($('#betAmountA').attr('max')) - playerABet;
+                if (amountToCall <= chipsLeft) {
+                    con.invoke('PlaceBet', amountToCall , true)
+                    updatePot(amountToCall)
+                    con.invoke('Showdown',potAmount)
+                } else {
+                    console.log('You cannot afford to call');
+                }
+            }
+        });
+
+        $('#foldA').click(e => {
+            e.preventDefault()
+            if (started && isPlayerATurn) {
+                document.getElementById('foldAudio').play();
+                con.invoke('Fold', potAmount);
+            }
+        });
+
+        $('#checkB').click(e => {
+            e.preventDefault()
+            if (started && !isPlayerATurn) {
+                document.getElementById('checkAudio').play();
+                con.invoke('Check');
+            }
+        });
+
+        $('#callB').click(e => {
+            e.preventDefault()
+            if (started && !isPlayerATurn) {
+                const amountToCall = playerABet - playerBBet;
+                const chipsLeft = parseInt($('#betAmountB').attr('max')) - playerBBet;
+
+                if (amountToCall <= chipsLeft) {
+                    con.invoke('PlaceBet', amountToCall , true);
+                    updatePot(amountToCall)
+                    con.invoke('Showdown',potAmount)
+                } else {
+                    console.log('You cannot afford to call');
+                }
+            }
+        });
+
+        $('#foldB').click(e => {
+            e.preventDefault()
+            if (started && !isPlayerATurn) {
+                document.getElementById('foldAudio').play();
+                con.invoke('Fold', potAmount);
+            }
+        });
+
         // ========================================================================================
         // Connect
         // ========================================================================================
@@ -132,7 +352,7 @@
         const con = new signalR.HubConnectionBuilder()
             .withUrl('/gamehub?' + param)
             .build();
-        
+
         con.onclose(err => {
             alert('Disconnected');
             location = '/';
@@ -141,73 +361,387 @@
         con.on('Reject', () => {
             location = 'list.html';
         });
-        
-        con.on('Ready', (letter, game) => {
-            if (game.playerA) {
-                $('#nameA').text(game.playerA.name);
-                $('#A').text(game.playerA.icon).show();
+
+        con.on('PlayerJoined', (game,letter) => {
+            if (game.players[0]) {
+                $('#nameA').text(game.players[0].name + game.players[0].icon);
+                $('#chipsA').text(game.players[0].chips);
+                $(`#betAmountA`).attr('max', game.players[0].chips);
+                $('#cardABack').show();
             }
 
-            if (game.playerB) {
-                $('#nameB').text(game.playerB.name);
-                $('#B').text(game.playerB.icon).show();
+            if (game.players[1]) {
+                $('#nameB').text(game.players[1].name + game.players[1].icon);
+                $('#chipsB').text(game.players[1].chips);
+                $(`#betAmountB`).attr('max', game.players[1].chips);
+                $('#cardBBack').show();
             }
 
             if (me == null) {
                 me = letter;
                 $('#' + me).addClass('me');
             }
+
+            if (me === 'A') {
+                $('.container').css('flex-direction','column-reverse')
+                $('#cardA').css('order','1')
+                $('#cardBBack').css('order','-1')
+            } else if (me === 'B') {
+                $('.container').css('flex-direction','column')
+                $('#cardB').css('order','1')
+                $('#cardABack').css('order','-1')
+            }
+
+            $game = game
         });
 
-        con.on('Left', letter => {
+        con.on('SplitPot', (game , winner = null , foldedPlayer = null) => {
+            if(foldedPlayer != null){
+                $status.text(`Player ${foldedPlayer.name} folded.`);
+
+                if(winner != null){
+                    let letter = game.players[0].id == winner.id?'A':'B';
+
+                    if (me == letter) {
+                        $status.text('You win !');
+                        $('#timer').text('Opponent Timeout ...');
+                    }
+                    else {
+                        $status.text('You lose ...');
+                        $('#timer').text('Timeout !');
+                    }
+                }
+            }
+
+                for (let i = 0; i < game.players.length; i++) {
+                    const player = game.players[i];
+                    updateChipsAndMax(player.chips, player.id == game.players[0].id ? 'A' : 'B');
+                }
+
+                if(winner != null){
+                    let letter = game.players[0].id == winner.id?'A':'B';
+
+                    if (me == letter) {
+                        $status.text('You win !');
+                    }
+                    else {
+                        $status.text('You lose ...');
+                    }
+                }else{
+                    $status.text('Its a Tie !');
+                }
+
+                potAmount = 0
+                $("#potAmount").text(potAmount);
+
+                playerABet = 0
+                playerBBet = 0
+
+            setTimeout(() => {
+                con.invoke('StartNewRound')
+            }, 6000);
+        });
+
+        con.on('PlayerLeft', player => {
             let id = setTimeout(() => location = 'list.html', 3000);
             while (--id) clearTimeout(id);
 
             started = false;
-            $status.text(`Player ${letter} left. You win!`);
+            $gameStatus.text(`Player ${player.name} left. You win!`);
         });
 
-        con.on('Start', () => {
-            setTimeout(() => $status.text('Ready... 3'), 1000);
-            setTimeout(() => $status.text('Ready... 2'), 2000);
-            setTimeout(() => $status.text('Ready... 1'), 3000);
+        con.on('Showdown', () => {
+            clearInterval(turnTimer);
+            $('#timer').text('Showing hand');
+            $('#placeBetA').prop('disabled', true);
+            $('#checkA').prop('disabled', true);
+            $('#callA').prop('disabled', true);
+            $('#foldA').prop('disabled', true);
+            $('#placeBetB').prop('disabled', true);
+            $('#checkB').prop('disabled', true);
+            $('#callB').prop('disabled', true);
+            $('#foldB').prop('disabled', true);
+            $status.text('Showdown !');
+            document.getElementById('showdownAudio').play();
             setTimeout(() => {
-                $status.text('Press SPACE to run!');
-                started = true;
-            }, 4000);
+                $('#cardA').show();
+                $('#cardB').show();
+                $('#cardBBack').hide();
+                $('#cardABack').hide();
+                setTimeout(() => {
+                    $('#cardB').hide();
+                    $('#cardA').hide();
+                    if (me === 'A') {
+                        $('#cardBBack').show();
+                        $('#cardA').show();
+                    } else if (me === 'B') {
+                        $('#cardABack').show();
+                        $('#cardB').show();
+                    }
+                }, 6000); // Hide opponent's cards after 6 seconds
+            }, 2000); // Show both players' cards after 1 second
+
         });
 
-        con.on('Move', (letter, count) => {
-            $('#' + letter).css('margin-left', count + '%');
+        con.on('Start', (game) => {
+            document.getElementById('flipAudio').play();
+            $game = game
+            $('#placeBetA').prop('disabled', false);
+            $('#placeBetB').prop('disabled', true);
+
+            $('#checkA').prop('disabled', false);
+            $('#callA').prop('disabled', false);
+            $('#foldA').prop('disabled', false);
+            $('#checkB').prop('disabled', true);
+            $('#callB').prop('disabled', true);
+            $('#foldB').prop('disabled', true);
+
+            $('#betAmountA').attr('min', 0);
+            $('#betValueA').text(0);
+
+            $('#betAmountB').attr('min', 0);
+            $('#betValueB').text(0);
+
+            $gameStatus.text('Play Poker!');
+            started = true;
+            $('.cardValueA').text(getCardValue(game.players[0]));
+            $('.cardValueB').text(getCardValue(game.players[1]));
+            if (me === 'A') {
+                $('#cardA').show();
+                $('#cardBBack').show();
+                $('#cardABack').hide();
+
+                $(`#bettingA`).show();
+                $(`#bettingB`).hide();
+
+                scrollToElement(document.getElementById('bettingA'));
+            } else if (me === 'B') {
+                $('#cardB').show();
+                $('#cardABack').show();
+                $('#cardBBack').hide();
+
+                $(`#bettingA`).hide();
+                $(`#bettingB`).show();
+
+                scrollToElement(document.getElementById('bettingB'));
+            }
+
+            isPlayerATurn = true
+
+            if(isPlayerATurn){
+                $status.text('Player A Turn !');
+            }else{
+                $status.text('Player B Turn !');
+            }
+
+            resetTurnTimer()
+
         });
 
         con.on('Win', letter => {
             started = false;
 
             if (me == letter) {
-                $status.text('You win!');
+                $status.text('You win !');
             }
             else {
-                $status.text('You lose!');
+                $status.text('You lose !');
             }
 
             setTimeout(() => location = 'list.html', 3000);
         });
 
+        con.on('BetPlaced', (game , player , chipsLeft , betAmount) => {
+            $game = game
+            let letter = game.players[0].id == player.id?'A':'B'
+            updateChipsAndMax(chipsLeft, letter)
+            updatePot(betAmount)
+            if(letter == 'A'){
+                playerABet += betAmount
+                $('#betAmountB').attr('min', betAmount);
+                $('#betValueB').text(betAmount);
+            }else{
+                playerBBet += betAmount
+                $('#betAmountA').attr('min', betAmount);
+                $('#betValueA').text(betAmount);
+            }
+        });
+
+        con.on('UpdateTurn', () => {
+            switchTurn()
+        });
+
+        // ========================================================================================
+        // General Functions (Game)
+        // ========================================================================================
+
+        function startTurnTimer() {
+            turnTimer = setInterval(() => {
+                remainingTime--;
+                if (remainingTime > 0) {
+                    $('#timer').text(`Time remaining: ${remainingTime} seconds`);
+                } else if (remainingTime == 0){
+                    $('#timer').text(`Time remaining: ${remainingTime} seconds`);
+
+                    $('#placeBetA').prop('disabled', true);
+                    $('#checkA').prop('disabled', true);
+                    $('#callA').prop('disabled', true);
+                    $('#foldA').prop('disabled', true);
+                    $('#placeBetB').prop('disabled', true);
+                    $('#checkB').prop('disabled', true);
+                    $('#callB').prop('disabled', true);
+                    $('#foldB').prop('disabled', true);
+                    if (isPlayerATurn && me == 'A') {
+                        $('#foldA').click();
+                    } else if(!isPlayerATurn && me == 'B') {
+                        $('#foldB').click();
+                    }
+                }
+            }, 1000);
+        }
+
+        function resetTurnTimer() {
+            remainingTime = 30;
+            clearInterval(turnTimer);
+            startTurnTimer();
+        }
+
+        function switchTurn() {
+            if (isPlayerATurn) {
+                isPlayerATurn = false;
+                $('#placeBetA').prop('disabled', true);
+                $('#placeBetB').prop('disabled', false);
+                $('#checkA').prop('disabled', true);
+                $('#callA').prop('disabled', true);
+                $('#foldA').prop('disabled', true);
+                if(playerABet != playerBBet){
+                    $('#checkB').prop('disabled', true);
+                }else{
+                    $('#checkB').prop('disabled', false);
+                }
+                $('#callB').prop('disabled', false);
+                $('#foldB').prop('disabled', false);
+
+                $status.text('Player B Turn !');
+            }else if (!isPlayerATurn) {
+                isPlayerATurn = true;
+                $('#placeBetB').prop('disabled', true);
+                $('#placeBetA').prop('disabled', false);
+                if(playerABet != playerBBet){
+                    $('#checkA').prop('disabled', true);
+                }else{
+                    $('#checkA').prop('disabled', false);
+                }
+                $('#callA').prop('disabled', false);
+                $('#foldA').prop('disabled', false);
+                $('#checkB').prop('disabled', true);
+                $('#callB').prop('disabled', true);
+                $('#foldB').prop('disabled', true);
+
+                $status.text('Player A Turn !');
+            }
+
+            resetTurnTimer()
+        }
+
+        function updatePot(bet){
+            potAmount += bet
+            $("#potAmount").text(potAmount);
+        }
+
+        function updateChipsAndMax(chips,letter) {
+            $(`#chips${letter}`).text(chips);
+            $(`#betAmount${letter}`).attr('max', chips);
+            $(`#betValue${letter}`).text(chips);
+        }
+
+        function scrollToElement(element) {
+            element.scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
+        }
+
+        function getCardValue(player) {
+            const cardRank = player.hand.rank
+            switch (cardRank) {
+                case 2: return '2';
+                case 3: return '3';
+                case 4: return '4';
+                case 5: return '5';
+                case 6: return '6';
+                case 7: return '7';
+                case 8: return '8';
+                case 9: return '9';
+                case 10: return '10';
+                case 11: return 'J';
+                case 12: return 'Q';
+                case 13: return 'K';
+                case 14: return 'A';
+                default: return '';
+            }
+        }
+
         con.start().then(main);
 
         function main() {
-            $(document).keydown(e => {
-                if (started && e.code == 'Space' && !e.originalEvent.repeat) {
-                    con.invoke('Run', me);
+
+            $('#betAmountA').on('input', function() {
+                $('#betValueA').text($(this).val());
+            });
+
+            $('#betAmountB').on('input', function() {
+                $('#betValueB').text($(this).val());
+            });
+
+            $('#placeBetA').click(e => {
+                e.preventDefault();
+                let betAmount = parseInt($('#betAmountA').val());
+                let adjustedBetAmount = 0;
+                let betAmountOpponent = playerBBet;
+
+                // Ensure the bet amount from A is not more than what B has left
+                let playerBChips = parseInt($('#betAmountB[type="range"]').prop('max'));
+                let totalPlayerBChips = playerBChips + betAmountOpponent;
+                adjustedBetAmount = Math.min(betAmount, totalPlayerBChips);
+
+                if (started && isPlayerATurn) {
+                    isPlayerABet = true;
+                    con.invoke('PlaceBet', adjustedBetAmount , adjustedBetAmount == betAmountOpponent?true:false)
+                        .then(() => {
+                            if(adjustedBetAmount == betAmountOpponent){
+                                con.invoke('Showdown',potAmount)
+                            }
+                            document.getElementById('betAudio').play();
+                        })
+                        .catch(error => {
+                            console.error('Error placing bet:', error);
+                        });
                 }
             });
 
-            $(document).on('pointerdown', e => {
-                if (started && e.buttons == 1 && e.originalEvent.isPrimary) {
-                    con.invoke('Run', me);
+            $('#placeBetB').click(e => {
+                e.preventDefault();
+                let betAmount = parseInt($('#betAmountB').val());
+                let adjustedBetAmount = 0;
+                let playerAChips = parseInt($('#betAmountA[type="range"]').prop('max'));
+                let betAmountOpponent = playerABet;
+
+                // Ensure the bet amount from B is not more than what A has left
+                let totalPlayerAChips = playerAChips + betAmountOpponent;
+                adjustedBetAmount = Math.min(betAmount, totalPlayerAChips)
+
+                if (started && !isPlayerATurn) {
+                    con.invoke('PlaceBet', adjustedBetAmount , adjustedBetAmount == betAmountOpponent?true:false)
+                        .then(() => {
+                            if(adjustedBetAmount == betAmountOpponent){
+                                con.invoke('Showdown',potAmount)
+                            }
+                            document.getElementById('betAudio').play();
+                        })
+                        .catch(error => {
+                            console.error('Error placing bet:', error);
+                        });
                 }
             });
+
         }
 
     </script>
