@@ -286,7 +286,7 @@
             e.preventDefault()
             if (started && isPlayerATurn) {
                 document.getElementById('checkAudio').play();
-                con.invoke('Check');
+                con.invoke('Check',false , potAmount);
             }
         });
 
@@ -317,7 +317,7 @@
             e.preventDefault()
             if (started && !isPlayerATurn) {
                 document.getElementById('checkAudio').play();
-                con.invoke('Check');
+                con.invoke('Check',true , potAmount);
             }
         });
 
@@ -494,7 +494,7 @@
             $('#placeBetB').prop('disabled', true);
 
             $('#checkA').prop('disabled', false);
-            $('#callA').prop('disabled', false);
+            $('#callA').prop('disabled', true);
             $('#foldA').prop('disabled', false);
             $('#toggleCardA').prop('disabled', false);
             $('#checkB').prop('disabled', true);
@@ -594,11 +594,13 @@
             updatePot(betAmount)
             if(letter == 'A'){
                 playerABet += betAmount
-                $('#betAmountB').attr('min', betAmount);
+                let amountToBet = betAmount - playerBBet
+                $('#betAmountB').attr('min', amountToBet);
                 $('#betValueB').text(betAmount);
             }else{
                 playerBBet += betAmount
-                $('#betAmountA').attr('min', betAmount);
+                let amountToBet = betAmount - playerABet
+                $('#betAmountA').attr('min', amountToBet);
                 $('#betValueA').text(betAmount);
             }
         });
@@ -650,12 +652,14 @@
                 $('#checkA').prop('disabled', true);
                 $('#callA').prop('disabled', true);
                 $('#foldA').prop('disabled', true);
+
                 if(playerABet != playerBBet){
                     $('#checkB').prop('disabled', true);
+                    $('#callB').prop('disabled', false);
                 }else{
                     $('#checkB').prop('disabled', false);
+                    $('#callB').prop('disabled', true);
                 }
-                $('#callB').prop('disabled', false);
                 $('#foldB').prop('disabled', false);
 
                 $status.text('Player B Turn !');
@@ -665,10 +669,11 @@
                 $('#placeBetA').prop('disabled', false);
                 if(playerABet != playerBBet){
                     $('#checkA').prop('disabled', true);
+                    $('#callA').prop('disabled', false);
                 }else{
                     $('#checkA').prop('disabled', false);
+                    $('#callA').prop('disabled', true);
                 }
-                $('#callA').prop('disabled', false);
                 $('#foldA').prop('disabled', false);
                 $('#checkB').prop('disabled', true);
                 $('#callB').prop('disabled', true);
@@ -738,6 +743,8 @@
                 let totalPlayerBChips = playerBChips + betAmountOpponent;
                 adjustedBetAmount = Math.min(betAmount, totalPlayerBChips);
 
+                adjustedBetAmount += playerABet
+
                 if (started && isPlayerATurn) {
                     isPlayerABet = true;
                     con.invoke('PlaceBet', adjustedBetAmount , adjustedBetAmount == betAmountOpponent?true:false)
@@ -763,6 +770,8 @@
                 // Ensure the bet amount from B is not more than what A has left
                 let totalPlayerAChips = playerAChips + betAmountOpponent;
                 adjustedBetAmount = Math.min(betAmount, totalPlayerAChips)
+
+                adjustedBetAmount += playerBBet
 
                 if (started && !isPlayerATurn) {
                     con.invoke('PlaceBet', adjustedBetAmount , adjustedBetAmount == betAmountOpponent?true:false)

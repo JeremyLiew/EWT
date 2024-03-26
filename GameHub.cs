@@ -213,10 +213,21 @@ public class GameHub : Hub
         }
     }
 
-    public async Task Check()
+    public async Task Check(bool endRound , int potAmount)
     {
         string gameId = Context.GetHttpContext()!.Request.Query["gameId"].ToString();
-        await Clients.Group(gameId).SendAsync("UpdateTurn");
+
+        var game = games.FirstOrDefault(g => g.Id == gameId);
+        if (game == null)
+        {
+            return;
+        }
+
+        if(endRound){
+             await Showdown(potAmount);
+        }else{
+            await Clients.Group(gameId).SendAsync("UpdateTurn");
+        }
     }
 
     public async Task Fold(int potAmount)
