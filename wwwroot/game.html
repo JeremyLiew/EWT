@@ -398,6 +398,7 @@
         });
 
         con.on('SplitPot', (game , winner = null , foldedPlayer = null) => {
+            clearInterval(turnTimer)
             if(foldedPlayer != null){
                 $status.text(`Player ${foldedPlayer.name} folded.`);
 
@@ -406,11 +407,11 @@
 
                     if (me == letter) {
                         $status.text('You win !');
-                        $('#timer').text('Opponent Timeout ...');
+                        $('#timer').text('Opponent Folded ...');
                     }
                     else {
                         $status.text('You lose ...');
-                        $('#timer').text('Timeout !');
+                        $('#timer').text('You folded !');
                     }
                 }
             }
